@@ -2,7 +2,7 @@
 
 # What does this do?
 This addon has two main features.
-1. Randomly changing fonts every time you review a card. 
+1. Randomly changes fonts every time you review a card (starts with 2 extra fonts). 
    * This helps deal with the problem of failing to recognize a kanji in fonts outside of the one you use in Anki by not letting your brain just remember the way that kanji looks in one specific font.
 3. Randomly (for the entire page) swap hiragana with katakana and katakana with hiragana.
    * This helps train your katakana reading speed by randomly giving you sentences. 
