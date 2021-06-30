@@ -1,6 +1,6 @@
 # Japanese Card Randomizer for Anki
 
-#What does this do?
+# What does this do?
 This addon has two main features.
 1. Randomly changing fonts every time you review a card. 
    * This helps deal with the problem of failing to recognize a kanji in fonts outside of the one you use in Anki by not letting your brain just remember the way that kanji looks in one specific font.
