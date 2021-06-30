@@ -1,0 +1,4 @@
+{
+    "percentChanceToConvertToKatakana": 0.5,
+    "fontsToRandomlyChoose": ["_hgrkk.ttf", "_yugothb.ttc"]
+}

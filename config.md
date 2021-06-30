@@ -1,0 +1,4 @@
+* `percentChanceToConvertToKatakana` Controls the percent chance to swap all hiragana and katakana. 0 is off, 1 is always swap, 0.5 is 50% chance. Any value between 0 and 1 works.
+* `fontsToRandomlyChoose` A list of what fonts to randomly change to. The fonts you enter in `fontsToRandomlyChoose` **MUST** be in your `/collections.media` folder in anki. Format `["A.tff", "B.tff", "C.tcc"]`
+NOTE: Do not include you're default font in this. It will choose between the fonts in this list AND the one you have on your card already. For example if you want to choose from fonts `A.tff`, `B.tff`, and `C.tff`, and the font on your card is already `A.tff` then `fontsToRandomlyChoose` should be `["B.tff", "C.tff"]`
+Fonts `"_hgrkk.ttf"` and `"_yugothb.ttc"` are included by default for convenience 
