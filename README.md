@@ -1,5 +1,9 @@
 # Japanese Card Randomizer for Anki
+# Downloading
 Download from AnkiWeb https://ankiweb.net/shared/info/1476821676
+# Building
+Building the .ankiaddon can be done on Windows by running `build.bat`
+On Linux there currently isn't a one click build setup, but all that needs to be done is to zip everything except for `meta.json`(it may not exist) into a `.zip` file, and then rename to a `.ankiaddon` file
 # What does this do?
 This addon has two main features.
 1. Font Randomizer: Randomly changes fonts every time you review a card (starts with 2 extra fonts). 
