@@ -73,7 +73,7 @@ If the problem persists try redownloading the add-on. Otherwise create an issue 
         # Start of injected javascript code
         injectedCode += "<script>\n"
         # Convert to verical text randomly
-        maxHeight = config['verticalText']['limitedToTheseDecks'] or "80vh"
+        maxHeight = config['verticalText']['styleMaxHeight'] or "80vh"
         injectedCode += "let expressionStyleMaxHeight = \"" + maxHeight + "\";\n"
         percentChanceConvertVertical = config['verticalText']['chance']
         convertVertical = random.uniform(0, 1) < percentChanceConvertVertical
