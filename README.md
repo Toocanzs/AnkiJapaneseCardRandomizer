@@ -1,5 +1,5 @@
 # Japanese Card Randomizer for Anki
-
+Download from AnkiWeb https://ankiweb.net/shared/info/1476821676
 # What does this do?
 This addon has two main features.
 1. Font Randomizer: Randomly changes fonts every time you review a card (starts with 2 extra fonts). 
