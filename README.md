@@ -16,7 +16,7 @@ This addon has three main features.
    * Since it not entirely hiragana or entirely katakana it is still readable. You can tell where words start and end still.
 3. Vertical Text: (Disabled by default) Randomly displays the card in a vertical text format instead of horizonal
    * This is for extra practice reading vertical text. If your immersion doesn't include vertical text it can be tough to read sometimes.
-   * NOTE: This feature requires you to mark what section of your card is your expression field by adding the class name `expression-field` to it. Migaku cards should work by default as `migaku-word-front` is also a valid class name to enable this feature. To add the class name to your card, edit your card and see something like `<div class="question">{{Expression}}</div>` you just need to add `expression-field` to the class list like so `<div class="question expression-field">{{Expression}}</div>`. The `{{Expression}}` part might be different, it's just the name of the first field of your card.
+   * NOTE: This feature requires you to mark what section of your card is your expression field by adding the class name `expression-field` to it. Migaku cards should work by default as `migaku-word-front` is also a valid class name to enable this feature. To add the class name to your card, edit your card and you should see something like `<div class="question">{{Expression}}</div>` you just need to add `expression-field` to the class list like so `<div class="question expression-field">{{Expression}}</div>`. The `{{Expression}}` part might be different, it's just the name of the first field of your card.
 
 # Setup
 After installing the addon through the anki web addon page the addon will be enabled by default. Simply start reviewing cards and fonts will be randomized along with katakana and hiragana being randomly swapped.
@@ -39,7 +39,7 @@ Below are what each config value does:
  
  * `verticalText` Switches the card to layout text in a vertical left to right fashion, just like light novels are displayed. This is for vertical text reading practice
     * `chance` The chance to convert to vertical text. NOTE: This is set to `0` by default.
-    * NOTE: This feature requires you to mark what section of your card is your expression field by adding the class name `expression-field` to it. Also for ease of use, Migaku cards work by default as the class name `migaku-word-front` is also used to enable this feature. To add the class name to your card, edit your card and see something like `<div class="question">{{Expression}}</div>` you just need to add `expression-field` to the class list like so `<div class="question expression-field">{{Expression}}</div>`
+    * NOTE: This feature requires you to mark what section of your card is your expression field by adding the class name `expression-field` to it. Also for ease of use, Migaku cards work by default as the class name `migaku-word-front` is also used to enable this feature. To add the class name to your card, edit your card and you should see something like `<div class="question">{{Expression}}</div>` you just need to add `expression-field` to the class list like so `<div class="question expression-field">{{Expression}}</div>`
     * This feature may mess with your layout in unexpected ways (although it's only temporary). If you run into issues after turning it on, set it back to 0 and let me know what went wrong through a github issue https://github.com/Toocanzs/AnkiJapaneseCardRandomizer/issues/new
 
 
