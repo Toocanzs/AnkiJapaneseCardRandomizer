@@ -9,7 +9,8 @@
     },
     "verticalText": {
         "chance": 0,
-        "limitedToTheseDecks": []
+        "limitedToTheseDecks": [],
+        "styleMaxHeight":"80vh"
     },
     "globalDeckLimitation": []
 }

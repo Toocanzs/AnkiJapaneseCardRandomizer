@@ -70,109 +70,116 @@ If the problem persists try redownloading the add-on. Otherwise create an issue 
             changeFontFamilyLine = f"body {{ font-family:{fontNames[randomIndex]} !important; }}"
             injectedCode += f"<style>{fontIncludes} {changeFontFamilyLine}</style>"
 
-        # Randomly change the entire page to swap katakana/hiragana
-        percentChanceToConvertToKatakana = config['katakanaConverter']['chance']
-        convertToKatakana = random.uniform(0, 1) < percentChanceToConvertToKatakana
-
+        # Start of injected javascript code
         injectedCode += "<script>\n"
-
+        # Convert to verical text randomly
+        maxHeight = config['verticalText']['limitedToTheseDecks'] or "80vh"
+        injectedCode += "let expressionStyleMaxHeight = \"" + maxHeight + "\";\n"
         percentChanceConvertVertical = config['verticalText']['chance']
         convertVertical = random.uniform(0, 1) < percentChanceConvertVertical
         if convertVertical and self.isFeatureEnabled(config['verticalText']['limitedToTheseDecks'], deckName):
             injectedCode += """let expressions = document.querySelectorAll(".expression-field, .migaku-word-front");
-            
-for(let expressionIndex = 0; expressionIndex < expressions.length; expressionIndex++)
-{
-    let expression = expressions[expressionIndex];
-    expression.style.writingMode = "vertical-rl";
-    traverseChildNodes(expression);
-}
+            for(let expressionIndex = 0; expressionIndex < expressions.length; expressionIndex++)
+            {
+                let expression = expressions[expressionIndex];
+                expression.style.writingMode = "vertical-rl";
+                expression.style.maxHeight = expressionStyleMaxHeight;
+                expression.style.width = "100%";
+                expression.style.display = "flex";
+                expression.style.justifyContent = "flex-end";
+                traverseChildNodes(expression);
+            }
 
-  function traverseChildNodes(node) {
-      var next;
-      if (node.nodeType === 1) {
-          // (Element node)
-          if (node = node.firstChild) {
-              do {
-                  // Recursively call traverseChildNodes
-                  // on each child node
-                  next = node.nextSibling;
-                  traverseChildNodes(node);
-              } while(node = next);
-          }
-      } else if (node.nodeType === 3) {
-        convertAsciiUpright(node);
-      }
-  }
+            function traverseChildNodes(node) {
+                var next;
+                if (node.nodeType === 1) {
+                    // (Element node)
+                    if (node = node.firstChild) {
+                        do {
+                            // Recursively call traverseChildNodes
+                            // on each child node
+                            next = node.nextSibling;
+                            traverseChildNodes(node);
+                        } while(node = next);
+                    }
+                } else if (node.nodeType === 3) {
+                    convertAsciiUpright(node);
+                }
+            }
 
-function convertAsciiUpright(node) {
-    let text = node.nodeValue;
-    let split = [];
-    // Split by japanese support stuff (like readings and pitch accent)
-    // Then split by ascii and throw everything into the split array.
-    // This way we can check if something is a japanese support thing later and skip it, otherwise we'd convert the ascii letters inside the japanese support thing to upright which would break it
-    const supportRegex = /( *\[[^\]]*])/g;
-    const asciiRegex = /([0-9a-zA-Z?“!”]+)/g;
-    
-    text.split(supportRegex).forEach(x=>{
-        if(x.match(supportRegex)) 
-            split.push(x); // Just push as is, no spllitting otherwise we turn "[がくえん;h]" to "[がくえん;", "h", "]"
-        else
-            x.split(asciiRegex).forEach(y=>split.push(y))
-    });
-    
-    // Convert ascii stuff to upright so it's easier to read
-    split = split.map(x=>{
-        console.log(x);
-        if(x.match(supportRegex)) 
-            return x;
-        if(x.match(asciiRegex))
-            return "<span style=\\"text-orientation: upright;\\">"+x+"</span>";
-        return x;
-    })
-    
-    // Replace text with our new nodes
-    let newNode = document.createElement("span");
-    newNode.innerHTML = split.join("");
-    while (newNode.firstChild) {
-        node.parentNode.insertBefore(newNode.firstChild, node);
-    }
-    node.parentNode.removeChild(node);
-}
-"""
+            function convertAsciiUpright(node) {
+                let text = node.nodeValue;
+                let split = [];
+                // Split by japanese support stuff (like readings and pitch accent)
+                // Then split by ascii and throw everything into the split array.
+                // This way we can check if something is a japanese support thing later and skip it, otherwise we'd convert the ascii letters inside the japanese support thing to upright which would break it
+                const supportRegex = /( *\[[^\]]*])/g;
+                const asciiRegex = /([0-9a-zA-Z?“!”]+)/g;
+                
+                text.split(supportRegex).forEach(x=>{
+                    if(x.match(supportRegex)) 
+                        split.push(x); // Just push as is, no spllitting otherwise we turn "[がくえん;h]" to "[がくえん;", "h", "]"
+                    else
+                        x.split(asciiRegex).forEach(y=>split.push(y))
+                });
+                
+                // Convert ascii stuff to upright so it's easier to read
+                split = split.map(x=>{
+                    console.log(x);
+                    if(x.match(supportRegex)) 
+                        return x;
+                    if(x.match(asciiRegex))
+                        return "<span style=\\"text-orientation: upright;\\">"+x+"</span>";
+                    return x;
+                })
+                
+                // Replace text with our new nodes
+                let newNode = document.createElement("span");
+                newNode.innerHTML = split.join("");
+                while (newNode.firstChild) {
+                    node.parentNode.insertBefore(newNode.firstChild, node);
+                }
+                node.parentNode.removeChild(node);
+            }
+            """
+        
+        # Randomly change the entire page to swap katakana/hiragana
+        percentChanceToConvertToKatakana = config['katakanaConverter']['chance']
+        convertToKatakana = random.uniform(0, 1) < percentChanceToConvertToKatakana
+
         if convertToKatakana and self.isFeatureEnabled(config['katakanaConverter']['limitedToTheseDecks'], deckName):
             injectedCode += """
-let hiragana = "ぁあぃいぅうぇえぉおかがきぎくぐけげこごさざしじすずせぜそぞただちぢっつづてでとどなにぬねのはばぱひびぴふぶぷへべぺほぼぽまみむめもゃやゅゆょよらりるれろゎわゐゑをんゔゕゖ"
-let katakana = "ァアィイゥウェエォオカガキギクグケゲコゴサザシジスズセゼソゾタダチヂッツヅテデトドナニヌネノハバパヒビピフブプヘベペホボポマミムメモャヤュユョヨラリルレロヮワヰヱヲンヴヵヶ"
-let elements = document.getElementsByTagName('*');
-for (let elementIndex = 0; elementIndex < elements.length; elementIndex++) {
-    let element = elements[elementIndex];
-    for (let childIndex = 0; childIndex < element.childNodes.length; childIndex++) {
-        let node = element.childNodes[childIndex];
-        if (node.nodeType === 3) {
-            let text = node.nodeValue;
-            let split = text.split('');
-            for(let charIndex = 0; charIndex < split.length; charIndex++) {
-                let hiraganaIndex = hiragana.indexOf(split[charIndex]);
-                let katakanaIndex = katakana.indexOf(split[charIndex]);
-                if(hiraganaIndex != -1) {
-                    split[charIndex] = katakana[hiraganaIndex];
-                }
-                else if (katakanaIndex != -1)
-                {
-                    split[charIndex] = hiragana[katakanaIndex];
+            let hiragana = "ぁあぃいぅうぇえぉおかがきぎくぐけげこごさざしじすずせぜそぞただちぢっつづてでとどなにぬねのはばぱひびぴふぶぷへべぺほぼぽまみむめもゃやゅゆょよらりるれろゎわゐゑをんゔゕゖ"
+            let katakana = "ァアィイゥウェエォオカガキギクグケゲコゴサザシジスズセゼソゾタダチヂッツヅテデトドナニヌネノハバパヒビピフブプヘベペホボポマミムメモャヤュユョヨラリルレロヮワヰヱヲンヴヵヶ"
+            let elements = document.getElementsByTagName('*');
+            for (let elementIndex = 0; elementIndex < elements.length; elementIndex++) {
+                let element = elements[elementIndex];
+                for (let childIndex = 0; childIndex < element.childNodes.length; childIndex++) {
+                    let node = element.childNodes[childIndex];
+                    if (node.nodeType === 3) {
+                        let text = node.nodeValue;
+                        let split = text.split('');
+                        for(let charIndex = 0; charIndex < split.length; charIndex++) {
+                            let hiraganaIndex = hiragana.indexOf(split[charIndex]);
+                            let katakanaIndex = katakana.indexOf(split[charIndex]);
+                            if(hiraganaIndex != -1) {
+                                split[charIndex] = katakana[hiraganaIndex];
+                            }
+                            else if (katakanaIndex != -1)
+                            {
+                                split[charIndex] = hiragana[katakanaIndex];
+                            }
+                        }
+                        let replacedText = split.join('');
+                        if (replacedText !== text) {
+                            let newNode = document.createTextNode(replacedText);
+                            element.replaceChild(newNode, node);
+                            node = newNode;
+                        }
+                    }
                 }
             }
-            let replacedText = split.join('');
-            if (replacedText !== text) {
-                let newNode = document.createTextNode(replacedText);
-                element.replaceChild(newNode, node);
-                node = newNode;
-            }
-        }
-    }
-}
-"""
+            """
         injectedCode += "</script>"
         return injectedCode + html
 JapaneseRandomizer()
