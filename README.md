@@ -22,10 +22,10 @@ This addon has three main features.
 After installing the addon through the anki web addon page the addon will be enabled by default. Simply start reviewing cards and fonts will be randomized along with katakana and hiragana being randomly swapped.
 
 # Configuration
-The addon can be configured by going to Tools->Add-ons, Selecting JapaneseCardRandomizer, then selecting Config
-Below are what each config value does
+The addon can be configured by going to Tools->Add-ons, Selecting JapaneseCardRandomizer, then selecting Config.
+Below are what each config value does:
 
-* `limitedToTheseDecks` Every sub section has a the ability to limit it to only certain deck names. Please note that the true deck name might differ from what's displayed visually. To get the correct deck name click the options/gear icon and click "rename" and copy the text
+* `limitedToTheseDecks` Every sub section has the ability to limit it to only certain deck names. Please note that the true deck name might differ from what's displayed visually. To get the correct deck name click the options/gear icon and click "rename" and copy the text
 * `globalDeckLimitation` This is for convenience if you just want all the features enabled but only for certain decks. This saves you having to enter the deck name in the `limitedToTheseDecks` for every option. 
     * Note: For a feature to be enabled the card must be apart of a deck in the `globalDeckLimitation` AND `limitedToTheseDecks` for that feature.  So if you have a global deck limit of `["Deck A"]` and the font randomizer has a deck limit of `["Deck B"]`, then Deck A will not have the font randomizer enabled, because the global deck limiter restricts that.
 
