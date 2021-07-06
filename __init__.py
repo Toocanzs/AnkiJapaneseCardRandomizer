@@ -79,12 +79,12 @@ If the problem persists try redownloading the add-on. Otherwise create an issue 
         percentChanceConvertVertical = config['verticalText']['chance']
         convertVertical = random.uniform(0, 1) < percentChanceConvertVertical
         if convertVertical and self.isFeatureEnabled(config['verticalText']['limitedToTheseDecks'], deckName):
-            injectedCode += """let expressions = document.getElementsByClassName("expression-field");
+            injectedCode += """let expressions = document.querySelectorAll(".expression-field, .migaku-word-front");
+            
 for(let expressionIndex = 0; expressionIndex < expressions.length; expressionIndex++)
 {
     let expression = expressions[expressionIndex];
     expression.style.writingMode = "vertical-rl";
-    expression.style.float = "right";
     traverseChildNodes(expression);
 }
 
