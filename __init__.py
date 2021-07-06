@@ -31,6 +31,9 @@ class JapaneseRandomizer():
         if not os.path.exists(path):
             shutil.copy(fontFilePath, path)
 
+    def isFeatureEnabled(self, configLine, deckName):
+        return not (len(configLine) > 0 and (deckName not in configLine))
+
     def injectContent(self, html, card, context):
         if context != 'reviewQuestion':
             return html
@@ -44,7 +47,7 @@ If the problem persists try redownloading the add-on. Otherwise create an issue 
         
         deck = mw.col.decks.get(card.did)
         deckName = deck['name']
-        if len(config['globalDeckLimitation']) > 0 and (deckName not in config['globalDeckLimitation']):
+        if not self.isFeatureEnabled(config['globalDeckLimitation'], deckName):
             return html
 
         injectedCode = ""
@@ -59,7 +62,7 @@ If the problem persists try redownloading the add-on. Otherwise create an issue 
             fontIncludes += f"@font-face {{ font-family: {fontName}; src: url('{fontUrl}'); }}"
 
         randomIndex = random.randint(0,len(fontNames))-1 # This purposefully includes 0 to length so that we can subtract 1 to give us a choice of doing nothing if randomIndex = -1
-        if len(config['fontRandomizer']['limitedToTheseDecks']) > 0 and (deckName not in config['fontRandomizer']['limitedToTheseDecks']):
+        if not self.isFeatureEnabled(config['fontRandomizer']['limitedToTheseDecks'], deckName):
             randomIndex = 0
 
         changeFontFamilyLine = ""
@@ -70,14 +73,12 @@ If the problem persists try redownloading the add-on. Otherwise create an issue 
         # Randomly change the entire page to swap katakana/hiragana
         percentChanceToConvertToKatakana = config['katakanaConverter']['chance']
         convertToKatakana = random.uniform(0, 1) < percentChanceToConvertToKatakana
-        if len(config['katakanaConverter']['limitedToTheseDecks']) > 0 and (deckName not in config['fontRandomizer']['limitedToTheseDecks']):
-            convertToKatakana = False
 
         injectedCode += "<script>\n"
 
         percentChanceConvertVertical = config['verticalText']['chance']
         convertVertical = random.uniform(0, 1) < percentChanceConvertVertical
-        if convertVertical:
+        if convertVertical and self.isFeatureEnabled(config['verticalText']['limitedToTheseDecks'], deckName):
             injectedCode += """let expressions = document.getElementsByClassName("expression-field");
 for(let expressionIndex = 0; expressionIndex < expressions.length; expressionIndex++)
 {
@@ -139,7 +140,7 @@ function convertAsciiUpright(node) {
     node.parentNode.removeChild(node);
 }
 """
-        if convertToKatakana:
+        if convertToKatakana and self.isFeatureEnabled(config['katakanaConverter']['limitedToTheseDecks'], deckName):
             injectedCode += """
 let hiragana = "ぁあぃいぅうぇえぉおかがきぎくぐけげこごさざしじすずせぜそぞただちぢっつづてでとどなにぬねのはばぱひびぴふぶぷへべぺほぼぽまみむめもゃやゅゆょよらりるれろゎわゐゑをんゔゕゖ"
 let katakana = "ァアィイゥウェエォオカガキギクグケゲコゴサザシジスズセゼソゾタダチヂッツヅテデトドナニヌネノハバパヒビピフブプヘベペホボポマミムメモャヤュユョヨラリルレロヮワヰヱヲンヴヵヶ"
