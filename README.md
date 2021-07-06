@@ -2,10 +2,12 @@
 # Downloading
 Download from AnkiWeb https://ankiweb.net/shared/info/1476821676
 # Building
-Building the .ankiaddon can be done on Windows by running `build.bat`
-On Linux there currently isn't a one click build setup, but all that needs to be done is to zip everything except for `meta.json`(it may not exist) into a `.zip` file, and then rename to a `.ankiaddon` file
+* Windows
+    * Building the .ankiaddon can be done on by running `build.bat`
+* Linux
+    * On Linux there currently isn't a one click build setup, but all that needs to be done is to zip everything except for `meta.json`(it may not exist) into a `.zip` file, and then rename to a `.ankiaddon` file
 # What does this do?
-This addon has two main features.
+This addon has three main features.
 1. Font Randomizer: Randomly changes fonts every time you review a card (starts with 2 extra fonts). 
    * This helps deal with the problem of failing to recognize a kanji in fonts outside of the one you use in Anki by not letting your brain just remember the way that kanji looks in one specific font.
 2. Katakana Converter: Randomly (for the entire page) swap hiragana with katakana and katakana with hiragana.
