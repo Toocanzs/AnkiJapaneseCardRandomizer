@@ -1,4 +1,15 @@
 {
-    "percentChanceToConvertToKatakana": 0.5,
-    "fontsToRandomlyChoose": ["_hgrkk.ttf", "_yugothb.ttc"]
+    "fontRandomizer": {
+        "fontsToRandomlyChoose": ["_hgrkk.ttf", "_yugothb.ttc"],
+        "limitedToTheseDecks": []
+    },
+    "katakanaConverter" : {
+        "chance": 0.5,
+        "limitedToTheseDecks": []
+    },
+    "verticalText": {
+        "chance": 0,
+        "limitedToTheseDecks": []
+    },
+    "globalDeckLimitation": []
 }

@@ -1,1 +1,4 @@
 included_fonts/
+meta.json
+.code-workspace
+build.bat

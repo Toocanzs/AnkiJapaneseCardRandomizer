@@ -1,6 +1,6 @@
 from aqt import mw, qt
 from anki.hooks import addHook
-from aqt.utils import showText
+from aqt.utils import showText, showWarning
 import shutil
 import os
 import random
@@ -35,9 +35,22 @@ class JapaneseRandomizer():
         if context != 'reviewQuestion':
             return html
         config = mw.addonManager.getConfig(__name__)
+        if config == None:
+            showWarning("""There was an error loading the config for the Japanese Randomizer Add-on. 
+Please check that the format is correct.
+If the problem persists try redownloading the add-on. Otherwise create an issue on github describing the problem https://github.com/Toocanzs/AnkiJapaneseCardRandomizer/issues/new
+""")
+            return html
+        
+        deck = mw.col.decks.get(card.did)
+        deckName = deck['name']
+        if len(config['globalDeckLimitation']) > 0 and (deckName not in config['globalDeckLimitation']):
+            return html
+
+        injectedCode = ""
 
         # Choose a font to change to (including not changing the font) randomly
-        fontsToRandomlyChoose = config['fontsToRandomlyChoose'] or []
+        fontsToRandomlyChoose = config['fontRandomizer']['fontsToRandomlyChoose']
         fontIncludes = ""
         fontNames = []
         for fontUrl in fontsToRandomlyChoose:
@@ -45,19 +58,89 @@ class JapaneseRandomizer():
             fontNames.append(fontName)
             fontIncludes += f"@font-face {{ font-family: {fontName}; src: url('{fontUrl}'); }}"
 
-        randomIndex = random.randint(0,len(fontNames))-1 # This purposefully includes 0 to length so that we can subtract 1 to give us a choice of doing nothing
+        randomIndex = random.randint(0,len(fontNames))-1 # This purposefully includes 0 to length so that we can subtract 1 to give us a choice of doing nothing if randomIndex = -1
+        if len(config['fontRandomizer']['limitedToTheseDecks']) > 0 and (deckName not in config['fontRandomizer']['limitedToTheseDecks']):
+            randomIndex = 0
+
         changeFontFamilyLine = ""
         if randomIndex >= 0:
             changeFontFamilyLine = f"body {{ font-family:{fontNames[randomIndex]} !important; }}"
-
-        injectedCode = f"<style>{fontIncludes} {changeFontFamilyLine}</style>"
+            injectedCode += f"<style>{fontIncludes} {changeFontFamilyLine}</style>"
 
         # Randomly change the entire page to swap katakana/hiragana
-        percentChanceToConvertToKatakana = config['percentChanceToConvertToKatakana'] or 0.5
+        percentChanceToConvertToKatakana = config['katakanaConverter']['chance']
         convertToKatakana = random.uniform(0, 1) < percentChanceToConvertToKatakana
+        if len(config['katakanaConverter']['limitedToTheseDecks']) > 0 and (deckName not in config['fontRandomizer']['limitedToTheseDecks']):
+            convertToKatakana = False
+
+        injectedCode += "<script>\n"
+
+        percentChanceConvertVertical = config['verticalText']['chance']
+        convertVertical = random.uniform(0, 1) < percentChanceConvertVertical
+        if convertVertical:
+            injectedCode += """let expressions = document.getElementsByClassName("expression-field");
+for(let expressionIndex = 0; expressionIndex < expressions.length; expressionIndex++)
+{
+    let expression = expressions[expressionIndex];
+    expression.style.writingMode = "vertical-rl";
+    expression.style.float = "right";
+    traverseChildNodes(expression);
+}
+
+  function traverseChildNodes(node) {
+      var next;
+      if (node.nodeType === 1) {
+          // (Element node)
+          if (node = node.firstChild) {
+              do {
+                  // Recursively call traverseChildNodes
+                  // on each child node
+                  next = node.nextSibling;
+                  traverseChildNodes(node);
+              } while(node = next);
+          }
+      } else if (node.nodeType === 3) {
+        convertAsciiUpright(node);
+      }
+  }
+
+function convertAsciiUpright(node) {
+    let text = node.nodeValue;
+    let split = [];
+    // Split by japanese support stuff (like readings and pitch accent)
+    // Then split by ascii and throw everything into the split array.
+    // This way we can check if something is a japanese support thing later and skip it, otherwise we'd convert the ascii letters inside the japanese support thing to upright which would break it
+    const supportRegex = /( *\[[^\]]*])/g;
+    const asciiRegex = /([0-9a-zA-Z?“!”]+)/g;
+    
+    text.split(supportRegex).forEach(x=>{
+        if(x.match(supportRegex)) 
+            split.push(x); // Just push as is, no spllitting otherwise we turn "[がくえん;h]" to "[がくえん;", "h", "]"
+        else
+            x.split(asciiRegex).forEach(y=>split.push(y))
+    });
+    
+    // Convert ascii stuff to upright so it's easier to read
+    split = split.map(x=>{
+        console.log(x);
+        if(x.match(supportRegex)) 
+            return x;
+        if(x.match(asciiRegex))
+            return "<span style=\\"text-orientation: upright;\\">"+x+"</span>";
+        return x;
+    })
+    
+    // Replace text with our new nodes
+    let newNode = document.createElement("span");
+    newNode.innerHTML = split.join("");
+    while (newNode.firstChild) {
+        node.parentNode.insertBefore(newNode.firstChild, node);
+    }
+    node.parentNode.removeChild(node);
+}
+"""
         if convertToKatakana:
             injectedCode += """
-<script>
 let hiragana = "ぁあぃいぅうぇえぉおかがきぎくぐけげこごさざしじすずせぜそぞただちぢっつづてでとどなにぬねのはばぱひびぴふぶぷへべぺほぼぽまみむめもゃやゅゆょよらりるれろゎわゐゑをんゔゕゖ"
 let katakana = "ァアィイゥウェエォオカガキギクグケゲコゴサザシジスズセゼソゾタダチヂッツヅテデトドナニヌネノハバパヒビピフブプヘベペホボポマミムメモャヤュユョヨラリルレロヮワヰヱヲンヴヵヶ"
 let elements = document.getElementsByTagName('*');
@@ -83,11 +166,12 @@ for (let elementIndex = 0; elementIndex < elements.length; elementIndex++) {
             if (replacedText !== text) {
                 let newNode = document.createTextNode(replacedText);
                 element.replaceChild(newNode, node);
+                node = newNode;
             }
         }
     }
 }
-</script>
 """
+        injectedCode += "</script>"
         return injectedCode + html
 JapaneseRandomizer()
