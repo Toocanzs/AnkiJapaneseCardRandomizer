@@ -18,16 +18,17 @@ class JapaneseRandomizer():
             raise
 
     def onWindowInit(self):
+        import glob
         mediaDir = mw.col.media.dir()
         # Install the included fonts to the media folder if they don't already exist
-        try:
-            self.copyFont(mediaDir, self.addonPath + "/included_fonts/_hgrkk.ttf")
-            self.copyFont(mediaDir, self.addonPath + "/included_fonts/_yugothb.ttc")
-        except:
-            pass
+        for filepath in glob.iglob(self.addonPath + "/included_fonts/*"):
+            try:
+                self.copyFont(mediaDir, filepath)
+            except Exception as ex:
+                pass
         
     def copyFont(self, mediaDir, fontFilePath):
-        path = os.path.join(mediaDir, fontFilePath)
+        path = os.path.join(mediaDir, os.path.basename(fontFilePath))
         if not os.path.exists(path):
             shutil.copy(fontFilePath, path)
 
@@ -73,7 +74,11 @@ If the problem persists try redownloading the add-on. Otherwise create an issue 
         # Start of injected javascript code
         injectedCode += "<script>\n"
         # Convert to verical text randomly
-        maxHeight = config['verticalText']['styleMaxHeight'] or "80vh"
+        maxHeight = "80vh"
+        try:
+            maxHeight = config['verticalText']['styleMaxHeight']
+        except:
+            pass
         injectedCode += "let expressionStyleMaxHeight = \"" + maxHeight + "\";\n"
         percentChanceConvertVertical = config['verticalText']['chance']
         convertVertical = random.uniform(0, 1) < percentChanceConvertVertical

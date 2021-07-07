@@ -35,7 +35,7 @@ Below are what each config value does:
 * `fontRandomizer` Switches randomly between a set of selected fonts
      * `fontsToRandomlyChoose` A list of what fonts to randomly change to. The fonts you enter in `fontsToRandomlyChoose`  **MUST** be in your `/collections.media` folder in anki. Format `["A.tff", "B.tff", "C.tcc"]`
      * NOTE: Do not include your default font in this. It will choose between the fonts in this list AND the one you have on your card already. For example if you want to choose from fonts `A.tff`, `B.tff`, and `C.tff`, and the font on your card is already `A.tff` then `fontsToRandomlyChoose` should be `["B.tff", "C.tff"]`
-    * Fonts `"_hgrkk.ttf"` and `"_yugothb.ttc"` are included by default for convenience
+    * A few fonts are included by default for convenience
  
  * `verticalText` Switches the card to layout text in a vertical left to right fashion, just like light novels are displayed. This is for vertical text reading practice
     * `chance` The chance to convert to vertical text. NOTE: This is set to `0` by default.
