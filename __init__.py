@@ -67,8 +67,10 @@ If the problem persists try redownloading the add-on. Otherwise create an issue 
             randomIndex = 0
 
         changeFontFamilyLine = ""
+        chosenFontName = "default"
         if randomIndex >= 0:
-            changeFontFamilyLine = f"body {{ font-family:{fontNames[randomIndex]} !important; }}"
+            chosenFontName = fontNames[randomIndex]
+            changeFontFamilyLine = f"body {{ font-family:{chosenFontName} !important; }}"
             injectedCode += f"<style>{fontIncludes} {changeFontFamilyLine}</style>"
 
         # Start of injected javascript code
@@ -80,6 +82,13 @@ If the problem persists try redownloading the add-on. Otherwise create an issue 
         except:
             pass
         injectedCode += "let expressionStyleMaxHeight = \"" + maxHeight + "\";\n"
+        injectedCode += "let chosenFontName = \"" + chosenFontName + "\";\n"
+        injectedCode += """
+            let fontNameElements = document.querySelectorAll(".font-name");
+            fontNameElements.forEach(el=>{
+                el.textContent = chosenFontName;
+            });\n
+        """
         percentChanceConvertVertical = config['verticalText']['chance']
         convertVertical = random.uniform(0, 1) < percentChanceConvertVertical
         if convertVertical and self.isFeatureEnabled(config['verticalText']['limitedToTheseDecks'], deckName):
@@ -92,6 +101,7 @@ If the problem persists try redownloading the add-on. Otherwise create an issue 
                 expression.style.width = "100%";
                 expression.style.display = "flex";
                 expression.style.justifyContent = "flex-end";
+                expression.style.textAlign = "left";
                 traverseChildNodes(expression);
             }
 

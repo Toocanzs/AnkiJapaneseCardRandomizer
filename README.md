@@ -42,6 +42,8 @@ Below are what each config value does:
     * NOTE: This feature requires you to mark what section of your card is your expression field by adding the class name `expression-field` to it. Also for ease of use, Migaku cards work by default as the class name `migaku-word-front` is also used to enable this feature. To add the class name to your card, edit your card and you should see something like `<div class="question">{{Expression}}</div>` you just need to add `expression-field` to the class list like so `<div class="question expression-field">{{Expression}}</div>`
     * This feature may mess with your layout in unexpected ways (although it's only temporary). If you run into issues after turning it on, set it back to 0 and let me know what went wrong through a github issue https://github.com/Toocanzs/AnkiJapaneseCardRandomizer/issues/new
 
+Besides the Anki config you can also do the following:
+* Add an HTML element with the class name `font-name` and it will be filled in with the chosen font name. Useful for finding what the name of a font you like or don't like is. Example: `<span class="font-name"></span>`
 
 The process for adding a new font goes as follows:
 1. Download a font, for the sake of example we'll call it `myfont.tff`, and copy it to the `/collections.media` folder of your Anki install.
