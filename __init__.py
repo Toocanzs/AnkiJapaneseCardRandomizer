@@ -84,7 +84,7 @@ If the problem persists try redownloading the add-on. Otherwise create an issue 
         chosenFontName = "default"
         if randomIndex >= 0:
             chosenFontName = fontNames[randomIndex]
-            changeFontFamilyLine = f"body {{ font-family:{chosenFontName} !important; }}"
+            changeFontFamilyLine = f"body * {{ font-family:{chosenFontName} !important; }}"
             injectedCode += f"<style>{fontIncludes} {changeFontFamilyLine}</style>"
 
         # Start of injected javascript code
