@@ -1,6 +1,7 @@
 from aqt import mw, qt
 from anki.hooks import addHook
 from aqt.utils import showText, showWarning
+import re
 import shutil
 import os
 import random
@@ -33,7 +34,20 @@ class JapaneseRandomizer():
             shutil.copy(fontFilePath, path)
 
     def isFeatureEnabled(self, configLine, deckName):
-        return not (len(configLine) > 0 and (deckName not in configLine))
+        # If there's no limited decks it's assumed to be enabled for all decks
+        if len(configLine) == 0:
+            return True
+        # If any of the decks in the "limted to these decks" config option match the pattern then the feature is enabled
+        for value in configLine:
+            # This makes it so we can use regex without having to worry about special characters in peoples limited deck list
+            # For example parens like () would be a capture group, but it's escape here
+            # Then we convert * to __WILDCARD__ so we can convert it back after escaping. `*` ends up being `.*` at the end
+            # ^ and $ are for start and end, so you don't get a match if you just have `a` and you have a deck named `japanese`. Without start and end it matches because it contains an `a`
+            regexPattern = "^" + re.escape(value.replace("*", "__WILDCARD__")).replace("__WILDCARD__", ".*") + "$"
+            matches = bool(re.match(regexPattern, deckName))
+            if matches:
+                return True
+        return False
 
     def injectContent(self, html, card, context):
         if context != 'reviewQuestion':
