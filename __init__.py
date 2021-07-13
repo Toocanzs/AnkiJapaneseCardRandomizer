@@ -26,7 +26,7 @@ class JapaneseRandomizer():
             try:
                 self.copyFont(mediaDir, filepath)
             except Exception as ex:
-                pass
+                mw.col.log("Failed to copy font " + str(mediaDir) + " " + str(filepath) + " " + str(ex))
         
     def copyFont(self, mediaDir, fontFilePath):
         path = os.path.join(mediaDir, os.path.basename(fontFilePath))
@@ -84,7 +84,7 @@ If the problem persists try redownloading the add-on. Otherwise create an issue 
         chosenFontName = "default"
         if randomIndex >= 0:
             chosenFontName = fontNames[randomIndex]
-            changeFontFamilyLine = f"body * {{ font-family:{chosenFontName} !important; }}"
+            changeFontFamilyLine = f"body * {{ font-family:{chosenFontName} !important; }}" # The * selector is incredibly dumb but we need it to go beyond migaku's style sheet's power level. Somehow * goes above important?
             injectedCode += f"<style>{fontIncludes} {changeFontFamilyLine}</style>"
 
         # Start of injected javascript code
@@ -93,8 +93,8 @@ If the problem persists try redownloading the add-on. Otherwise create an issue 
         maxHeight = "80vh"
         try:
             maxHeight = config['verticalText']['styleMaxHeight']
-        except:
-            pass
+        except Exception as e:
+            mw.col.log("Failed to get verticalText config options " + str(e))
         injectedCode += "let expressionStyleMaxHeight = \"" + maxHeight + "\";\n"
         injectedCode += "let chosenFontName = \"" + chosenFontName + "\";\n"
         injectedCode += """
@@ -104,73 +104,94 @@ If the problem persists try redownloading the add-on. Otherwise create an issue 
             });\n
         """
         percentChanceConvertVertical = config['verticalText']['chance']
-        convertVertical = random.uniform(0, 1) < percentChanceConvertVertical
-        if convertVertical and self.isFeatureEnabled(config['verticalText']['limitedToTheseDecks'], deckName):
-            injectedCode += """let expressions = document.querySelectorAll(".expression-field, .migaku-word-front");
-            for(let expressionIndex = 0; expressionIndex < expressions.length; expressionIndex++)
-            {
-                let expression = expressions[expressionIndex];
+        convertVertical = (random.uniform(0, 1) < percentChanceConvertVertical) and self.isFeatureEnabled(config['verticalText']['limitedToTheseDecks'], deckName)
+        injectedCode += "let convertVertical = " + str(convertVertical).lower() + ";\n"
+
+        newFontSize = 0.0 # disabled
+        fontUnits = ""
+        try:
+            enabledOnDeck = self.isFeatureEnabled(config['sizeRandomizer']['limitedToTheseDecks'], deckName)
+            if enabledOnDeck and (config['sizeRandomizer']['enabled'] == True):
+                newFontSize = random.uniform(int(config['sizeRandomizer']['minSize']), int(config['sizeRandomizer']['maxSize']))
+                fontUnits = config['sizeRandomizer']['units']
+        except Exception as e:
+            mw.col.log("Failed to get sizeRandomizer config options " + str(e))
+        injectedCode += "let newFontSize = " + str(int(newFontSize)) + ";\n"
+        injectedCode += "let fontUnits = \"" + fontUnits + "\";\n"
+
+        injectedCode += """
+        let expressions = document.querySelectorAll(".expression-field, .migaku-word-front");
+        for(let expressionIndex = 0; expressionIndex < expressions.length; expressionIndex++)
+        {
+            let expression = expressions[expressionIndex];
+            if(convertVertical) {
                 expression.style.writingMode = "vertical-rl";
                 expression.style.maxHeight = expressionStyleMaxHeight;
                 expression.style.width = "100%";
                 expression.style.display = "flex";
                 expression.style.justifyContent = "flex-end";
                 expression.style.textAlign = "left";
-                traverseChildNodes(expression);
             }
+            if(newFontSize) {
+                expression.style.setProperty("font-size", newFontSize + fontUnits, "important")
+            }
+            traverseChildNodes(expression);
+        }
 
-            function traverseChildNodes(node) {
-                var next;
-                if (node.nodeType === 1) {
-                    // (Element node)
-                    if (node = node.firstChild) {
-                        do {
-                            // Recursively call traverseChildNodes
-                            // on each child node
-                            next = node.nextSibling;
-                            traverseChildNodes(node);
-                        } while(node = next);
-                    }
-                } else if (node.nodeType === 3) {
+        function traverseChildNodes(node) {
+            var next;
+            if (node.nodeType === 1) {
+                // (Element node)
+                if (node = node.firstChild) {
+                    do {
+                        // Recursively call traverseChildNodes
+                        // on each child node
+                        next = node.nextSibling;
+                        traverseChildNodes(node);
+                    } while(node = next);
+                }
+            } else if (node.nodeType === 3) {
+                if(convertVertical) {
                     convertAsciiUpright(node);
                 }
             }
+        }
 
-            function convertAsciiUpright(node) {
-                let text = node.nodeValue;
-                let split = [];
-                // Split by japanese support stuff (like readings and pitch accent)
-                // Then split by ascii and throw everything into the split array.
-                // This way we can check if something is a japanese support thing later and skip it, otherwise we'd convert the ascii letters inside the japanese support thing to upright which would break it
-                const supportRegex = /( *\[[^\]]*])/g;
-                const asciiRegex = /([0-9a-zA-Z?“!”]+)/g;
-                
-                text.split(supportRegex).forEach(x=>{
-                    if(x.match(supportRegex)) 
-                        split.push(x); // Just push as is, no spllitting otherwise we turn "[がくえん;h]" to "[がくえん;", "h", "]"
-                    else
-                        x.split(asciiRegex).forEach(y=>split.push(y))
-                });
-                
-                // Convert ascii stuff to upright so it's easier to read
-                split = split.map(x=>{
-                    console.log(x);
-                    if(x.match(supportRegex)) 
-                        return x;
-                    if(x.match(asciiRegex))
-                        return "<span style=\\"text-orientation: upright;\\">"+x+"</span>";
+        function convertAsciiUpright(node) {
+            let text = node.nodeValue;
+            let split = [];
+            // Split by japanese support stuff (like readings and pitch accent)
+            // Then split by ascii and throw everything into the split array.
+            // This way we can check if something is a japanese support thing later and skip it, otherwise we'd convert the ascii letters inside the japanese support thing to upright which would break it
+            const supportRegex = /( *\[[^\]]*])/g;
+            const asciiRegex = /([0-9a-zA-Z?“!”]+)/g;
+            
+            text.split(supportRegex).forEach(x=>{
+                if(x.match(supportRegex)) 
+                    split.push(x); // Just push as is, no spllitting otherwise we turn "[がくえん;h]" to "[がくえん;", "h", "]"
+                else
+                    x.split(asciiRegex).forEach(y=>split.push(y))
+            });
+            
+            // Convert ascii stuff to upright so it's easier to read
+            split = split.map(x=>{
+                console.log(x);
+                if(x.match(supportRegex)) 
                     return x;
-                })
-                
-                // Replace text with our new nodes
-                let newNode = document.createElement("span");
-                newNode.innerHTML = split.join("");
-                while (newNode.firstChild) {
-                    node.parentNode.insertBefore(newNode.firstChild, node);
-                }
-                node.parentNode.removeChild(node);
+                if(x.match(asciiRegex))
+                    return "<span style=\\"text-orientation: upright;\\">"+x+"</span>";
+                return x;
+            })
+            
+            // Replace text with our new nodes
+            let newNode = document.createElement("span");
+            newNode.innerHTML = split.join("");
+            while (newNode.firstChild) {
+                node.parentNode.insertBefore(newNode.firstChild, node);
             }
-            """
+            node.parentNode.removeChild(node);
+        }
+        """
         
         # Randomly change the entire page to swap katakana/hiragana
         percentChanceToConvertToKatakana = config['katakanaConverter']['chance']

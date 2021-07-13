@@ -21,5 +21,12 @@
         "limitedToTheseDecks": [],
         "styleMaxHeight":"80vh"
     },
+    "sizeRandomizer":{
+        "enabled": false,
+        "minSize":30,
+        "maxSize":50,
+        "units": "px",
+        "limitedToTheseDecks": []
+    },
     "globalDeckLimitation": []
 }

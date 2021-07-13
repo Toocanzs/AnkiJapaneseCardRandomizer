@@ -17,4 +17,10 @@
     * This feature may mess with your layout in unexpected ways (although it's only temporary). If you run into issues after turning it on, set it back to 0 and let me know what went wrong through a github issue https://github.com/Toocanzs/AnkiJapaneseCardRandomizer/issues/new
     * `styleMaxHeight` This controls the maximum height for vertical text. Default is 80% of the screen size.
 
+* `sizeRandomizer` Randomizes size of any elements with `expression-field` or `migaku-word-front` as their class. To set this up read the setup instructions for `verticalText`
+    * `enabled` Enables the feature. `true` or `false`
+    * `minSize` Minimum size
+    * `maxSize` Maximum size
+    * `units` Sets the units to use for styling the font size. For example `px` as a unit would mean that if 50 was randomly chosen to be the font size, the final style would be `50px`
+
 
