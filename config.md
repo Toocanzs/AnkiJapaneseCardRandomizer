@@ -3,7 +3,7 @@
 * `globalDeckLimitation` This is for convenience if you just want all the features enabled but only for certain decks. This saves you having to enter the deck name in the `limitedToTheseDecks` for every option. 
     * Note: For a feature to be enabled the card must be apart of a deck in the `globalDeckLimitation` AND `limitedToTheseDecks` for that feature.  So if you have a global deck limit of `["Deck A"]` and the font randomizer has a deck limit of `["Deck B"]`, then Deck A will not have the font randomizer enabled, because the global deck limiter restricts that.
 
-* `katakanaConverter`  This feature swaps all hiragana and katakana around to allow for some extra katakana reading practice.
+* `katakanaConverter` (Disabled by default) This feature swaps all hiragana and katakana around to allow for some extra katakana reading practice.
     *  `chance` Controls the percent chance to swap all hiragana and katakana. 
         * 0 is off, 1 is always swap, 0.5 is 50% chance. Any value between 0 and 1 works.
 * `fontRandomizer` Switches randomly between a set of selected fonts

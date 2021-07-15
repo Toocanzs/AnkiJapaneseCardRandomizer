@@ -97,12 +97,15 @@ If the problem persists try redownloading the add-on. Otherwise create an issue 
             mw.col.log("Failed to get verticalText config options " + str(e))
         injectedCode += "let expressionStyleMaxHeight = \"" + maxHeight + "\";\n"
         injectedCode += "let chosenFontName = \"" + chosenFontName + "\";\n"
+
+        # Display font name on any .font-name elements
         injectedCode += """
             let fontNameElements = document.querySelectorAll(".font-name");
             fontNameElements.forEach(el=>{
                 el.textContent = chosenFontName;
             });\n
         """
+
         percentChanceConvertVertical = config['verticalText']['chance']
         convertVertical = (random.uniform(0, 1) < percentChanceConvertVertical) and self.isFeatureEnabled(config['verticalText']['limitedToTheseDecks'], deckName)
         injectedCode += "let convertVertical = " + str(convertVertical).lower() + ";\n"
@@ -118,6 +121,15 @@ If the problem persists try redownloading the add-on. Otherwise create an issue 
             mw.col.log("Failed to get sizeRandomizer config options " + str(e))
         injectedCode += "let newFontSize = " + str(int(newFontSize)) + ";\n"
         injectedCode += "let fontUnits = \"" + fontUnits + "\";\n"
+
+        # Display font size on any .font-size elements
+        if int(newFontSize) != 0:
+            injectedCode += """
+                let fontSizeElements = document.querySelectorAll(".font-size");
+                fontSizeElements.forEach(el=>{
+                    el.textContent = newFontSize + fontUnits;
+                });\n
+            """
 
         injectedCode += """
         let expressions = document.querySelectorAll(".expression-field, .migaku-word-front");

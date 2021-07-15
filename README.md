@@ -10,7 +10,7 @@ Download from AnkiWeb https://ankiweb.net/shared/info/1476821676
 This addon's features include:
 1. Font Randomizer: Randomly changes fonts every time you review a card (starts with 2 extra fonts). 
    * This helps deal with the problem of failing to recognize a kanji in fonts outside of the one you use in Anki by not letting your brain just remember the way that kanji looks in one specific font.
-2. Katakana Converter: Randomly (for the entire page) swap hiragana with katakana and katakana with hiragana.
+2. Katakana Converter: (Disabled by default) Randomly (for the entire page) swap hiragana with katakana and katakana with hiragana.
    * This helps train your katakana reading speed by randomly giving you sentences. 
    * For example `リンゴが好きです` will sometimes (by default 50% of the time) convert to `りんごガ好キデス`
    * Since it not entirely hiragana or entirely katakana it is still readable. You can tell where words start and end still.
@@ -55,7 +55,8 @@ Below are what each config value does:
 
 
 Besides the Anki config you can also do the following:
-* Add an HTML element with the class name `font-name` and it will be filled in with the chosen font name. Useful for finding what the name of a font you like or don't like is. Example: `<span class="font-name"></span>`
+* Add an HTML element to your card's styling with the class name `font-name` and it will be filled in with the randomly chosen font name. Useful for finding what the name of a font you like or don't like is. Example: `<span class="font-name"></span>`
+* Add an HTML element to your card's styling with the class name `font-size` and it will be filled in with the randomly chosen font size. Example: `<span class="font-size"></span>`
 
 The process for adding a new font goes as follows:
 1. Download a font, for the sake of example we'll call it `myfont.tff`, and copy it to the `/collections.media` folder of your Anki install.
