@@ -19,6 +19,8 @@ class JapaneseRandomizer():
             raise
 
     def onWindowInit(self):
+        if mw == None or mw.col == None or mw.col.media == None:
+            return
         import glob
         mediaDir = mw.col.media.dir()
         # Install the included fonts to the media folder if they don't already exist
