@@ -4,6 +4,7 @@ Download from AnkiWeb https://ankiweb.net/shared/info/1476821676
 # Building
 * Windows
     * Building the .ankiaddon can be done on by running `build.bat`
+    * NOTE: requires powershell 7 ( run `winget upgrade Microsoft.PowerShell` to get powershell 7)
 * Linux
     * On Linux there currently isn't a one click build setup, but all that needs to be done is to zip everything except for `meta.json`(it may not exist) into a `.zip` file, and then rename to a `.ankiaddon` file
 # What does this do?
