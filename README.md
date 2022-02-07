@@ -8,10 +8,10 @@ Download from AnkiWeb https://ankiweb.net/shared/info/1476821676
     * On Linux there currently isn't a one click build setup, but all that needs to be done is to zip everything except for `meta.json`(it may not exist) into a `.zip` file, and then rename to a `.ankiaddon` file
 # What does this do?
 This addon's features include:
-1. Font Randomizer: Randomly changes fonts every time you review a card (starts with 2 extra fonts). 
+1. Font Randomizer: Randomly changes fonts every time you review a card. A few Japanese fonts are included by default 
    * This helps deal with the problem of failing to recognize a kanji in fonts outside of the one you use in Anki by not letting your brain just remember the way that kanji looks in one specific font.
 2. Katakana Converter: (Disabled by default) Randomly (for the entire page) swap hiragana with katakana and katakana with hiragana.
-   * This helps train your katakana reading speed by randomly giving you sentences. 
+   * This helps train your katakana reading speed by randomly giving you sentences in Katakana. 
    * For example `リンゴが好きです` will sometimes (by default 50% of the time) convert to `りんごガ好キデス`
    * Since it not entirely hiragana or entirely katakana it is still readable. You can tell where words start and end still.
 3. Vertical Text: (Disabled by default) Randomly displays the card in a vertical text format instead of horizonal

@@ -5,6 +5,7 @@ import re
 import shutil
 import os
 import random
+from pathlib import Path
 
 class JapaneseRandomizer():
     def __init__(self):
@@ -24,7 +25,7 @@ class JapaneseRandomizer():
         import glob
         mediaDir = mw.col.media.dir()
         # Install the included fonts to the media folder if they don't already exist
-        for filepath in glob.iglob(self.addonPath + "/included_fonts/*"):
+        for filepath in glob.iglob(str(Path(self.addonPath) / "included_fonts" / "*")):
             try:
                 self.copyFont(mediaDir, filepath)
             except Exception as ex:
