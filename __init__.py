@@ -91,7 +91,7 @@ If the problem persists try redownloading the add-on. Otherwise create an issue 
             injectedCode += f"<style>{fontIncludes} {changeFontFamilyLine}</style>"
 
         # Start of injected javascript code
-        injectedCode += "<script>\n"
+        injectedCode += "<script>(function() {\n"
         # Convert to verical text randomly
         maxHeight = "80vh"
         try:
@@ -245,6 +245,6 @@ If the problem persists try redownloading the add-on. Otherwise create an issue 
                 }
             }
             """
-        injectedCode += "</script>"
+        injectedCode += "})()</script>"
         return injectedCode + html
 JapaneseRandomizer()
