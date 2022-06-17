@@ -11,10 +11,10 @@ Download from AnkiWeb https://ankiweb.net/shared/info/1476821676
 This addon's features include:
 1. Font Randomizer: Randomly changes fonts every time you review a card. A few Japanese fonts are included by default 
    * This helps deal with the problem of failing to recognize a kanji in fonts outside of the one you use in Anki by not letting your brain just remember the way that kanji looks in one specific font.
-2. Katakana Converter: (Disabled by default) Randomly (for the entire page) swap hiragana with katakana and katakana with hiragana.
+2. Katakana Converter: (Disabled by default) Randomly swap hiragana with katakana and katakana with hiragana.
    * This helps train your katakana reading speed by randomly giving you sentences in Katakana. 
-   * For example `リンゴが好きです` will sometimes (by default 50% of the time) convert to `りんごガ好キデス`
-   * Since it not entirely hiragana or entirely katakana it is still readable. You can tell where words start and end still.
+   * For example `リンゴが好きです` will sometimes convert to `りんごガ好キデス`
+   * Since it not entirely hiragana or entirely katakana it is still readable. You can still tell where words start and end.
 3. Vertical Text: (Disabled by default) Randomly displays the card in a vertical text format instead of horizonal
    * This is for extra practice reading vertical text. If your immersion doesn't include vertical text it can be tough to read sometimes.
    * NOTE: This feature requires you to mark what section of your card is your expression field by adding the class name `expression-field` to it. Migaku cards should work by default as `migaku-word-front` is also a valid class name to enable this feature. To add the class name to your card, edit your card and you should see something like `<div class="question">{{Expression}}</div>` you just need to add `expression-field` to the class list like so `<div class="question expression-field">{{Expression}}</div>`. The `{{Expression}}` part might be different, it's just the name of the first field of your card.
