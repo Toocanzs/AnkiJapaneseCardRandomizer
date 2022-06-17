@@ -112,6 +112,7 @@ If the problem persists try redownloading the add-on. Otherwise create an issue 
         percentChanceConvertVertical = config['verticalText']['chance']
         convertVertical = (random.uniform(0, 1) < percentChanceConvertVertical) and self.isFeatureEnabled(config['verticalText']['limitedToTheseDecks'], deckName)
         injectedCode += "let convertVertical = " + str(convertVertical).lower() + ";\n"
+        injectedCode += "if (convertVertical) { document.documentElement.classList.add(\"vertical-writing\");}\n"
 
         newFontSize = 0.0 # disabled
         fontUnits = ""
@@ -214,6 +215,7 @@ If the problem persists try redownloading the add-on. Otherwise create an issue 
 
         if convertToKatakana and self.isFeatureEnabled(config['katakanaConverter']['limitedToTheseDecks'], deckName):
             injectedCode += """
+            document.documentElement.classList.add(\"katakana-converted\");
             let hiragana = "ぁあぃいぅうぇえぉおかがきぎくぐけげこごさざしじすずせぜそぞただちぢっつづてでとどなにぬねのはばぱひびぴふぶぷへべぺほぼぽまみむめもゃやゅゆょよらりるれろゎわゐゑをんゔゕゖ"
             let katakana = "ァアィイゥウェエォオカガキギクグケゲコゴサザシジスズセゼソゾタダチヂッツヅテデトドナニヌネノハバパヒビピフブプヘベペホボポマミムメモャヤュユョヨラリルレロヮワヰヱヲンヴヵヶ"
             let elements = document.getElementsByTagName('*');
