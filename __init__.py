@@ -6,11 +6,13 @@ import shutil
 import os
 import random
 from pathlib import Path
+from . import font_coverage
 
 class JapaneseRandomizer():
     def __init__(self):
         addHook('prepareQA', self.injectContent)
         self.addonPath = os.path.dirname(os.path.realpath(__file__))
+        self.fontRangeCache = {}
 
         try:
             from aqt.gui_hooks import main_window_did_init
@@ -35,6 +37,21 @@ class JapaneseRandomizer():
         path = os.path.join(mediaDir, os.path.basename(fontFilePath))
         if not os.path.exists(path):
             shutil.copy(fontFilePath, path)
+
+    def getUnicodeRange(self, fontUrl):
+        # Some fonts map characters (often rarer kanji, or 〜) to empty glyphs, so they show up blank on the card
+        # instead of falling back to another font. Scan the font for those and return a CSS unicode-range that
+        # leaves them out. Cached by size and modification time so replaced fonts are rescanned.
+        path = os.path.join(mw.col.media.dir(), fontUrl)
+        try:
+            stat = os.stat(path)
+            key = (path, stat.st_size, stat.st_mtime_ns)
+            if key not in self.fontRangeCache:
+                self.fontRangeCache[key] = font_coverage.unicodeRangeFor(path)
+            return self.fontRangeCache[key]
+        except Exception as ex:
+            mw.col.log("Failed to check glyph coverage of font " + str(path) + " " + str(ex))
+            return None
 
     def isFeatureEnabled(self, configLine, deckName):
         # If there's no limited decks it's assumed to be enabled for all decks
@@ -72,12 +89,10 @@ If the problem persists try redownloading the add-on. Otherwise create an issue 
 
         # Choose a font to change to (including not changing the font) randomly
         fontsToRandomlyChoose = config['fontRandomizer']['fontsToRandomlyChoose']
-        fontIncludes = ""
         fontNames = []
         for fontUrl in fontsToRandomlyChoose:
             fontName = fontUrl.split(".")[0] # remove extension
             fontNames.append(fontName)
-            fontIncludes += f"@font-face {{ font-family: {fontName}; src: url('{fontUrl}'); }}"
 
         randomIndex = random.randint(0,len(fontNames))-1 # This purposefully includes 0 to length so that we can subtract 1 to give us a choice of doing nothing if randomIndex = -1
         if not self.isFeatureEnabled(config['fontRandomizer']['limitedToTheseDecks'], deckName):
@@ -87,6 +102,12 @@ If the problem persists try redownloading the add-on. Otherwise create an issue 
         chosenFontName = "default"
         if randomIndex >= 0:
             chosenFontName = fontNames[randomIndex]
+            chosenFontUrl = fontsToRandomlyChoose[randomIndex]
+            unicodeRange = ""
+            fontRange = self.getUnicodeRange(chosenFontUrl)
+            if fontRange:
+                unicodeRange = f" unicode-range: {fontRange};"
+            fontIncludes = f"@font-face {{ font-family: {chosenFontName}; src: url('{chosenFontUrl}');{unicodeRange} }}"
             changeFontFamilyLine = f"body * {{ font-family:{chosenFontName} !important; }}" # The * selector is incredibly dumb but we need it to go beyond migaku's style sheet's power level. Somehow * goes above important?
             injectedCode += f"<style>{fontIncludes} {changeFontFamilyLine}</style>"
 
